@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICOP: Dynamic Platform Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); }
+        .input-group label { font-weight: 600; color: #374151; }
+        .input-group textarea, .input-group input { border: 1px solid #D1D5DB; border-radius: 8px; padding: 10px; width: 100%; transition: border-color 0.2s; }
+        .input-group textarea:focus, .input-group input:focus { border-color: #4F46E5; outline: none; }
+        .output-title { font-size: 1.125rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .code-block { white-space: pre-wrap; word-wrap: break-word; padding: 1rem; border-radius: 6px; font-family: monospace; font-size: 0.9rem; line-height: 1.4; }
+        .code-block h4 { font-weight: 700; margin-top: 1rem; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<header class="text-center mb-8">
+    <h1 class="text-4xl font-extrabold text-indigo-700">ICOP Dynamic Platform Planner</h1>
+    <p class="text-xl text-gray-500 mt-2">Business-Driven Strategy Synthesis Across Any Tech Stack</p>
+</header>
+
+<main class="max-w-7xl mx-auto">
+    
+    <!-- Persistence Bar -->
+    <div class="flex flex-wrap justify-between items-center p-4 mb-6 bg-gray-100 rounded-xl">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-database text-indigo-500"></i>
+            <span class="font-semibold text-gray-700">Persistence Status:</span>
+            <span id="persistenceStatus" class="text-yellow-500">Initializing...</span>
+        </div>
+        <div class="space-x-4 mt-2 md:mt-0">
+            <button id="saveCampaignBtn" onclick="window.saveCampaign()" disabled class="bg-green-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-green-600 transition disabled:opacity-50">
+                <i class="fas fa-save"></i> Save Blueprint
+            </button>
+            <button id="loadCampaignBtn" onclick="window.openLoadModal()" disabled class="bg-indigo-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-600 transition disabled:opacity-50">
+                <i class="fas fa-folder-open"></i> Load Blueprint
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN INPUTS -->
+    <section id="main-inputs" class="card p-6 mb-8 bg-indigo-50 border-t-4 border-indigo-500">
+        <h2 class="text-2xl font-bold text-indigo-700 mb-4">Discovery & Strategy Inputs</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="input-group">
+                <label for="meddicNotes">1. Discovery Notes (MEDDIC Focus)</label>
+                <textarea id="meddicNotes" rows="6" placeholder="e.g., Metrics: Need to reduce CAC by 20%. Decision Criteria: Must use existing Snowflake data. Champion: Sarah from Engineering."></textarea>
+            </div>
+            <div class="input-group">
+                <label for="businessObjectives">2. Core Business Objectives (Mandatory)</label>
+                <textarea id="businessObjectives" rows="6" placeholder="e.g., Primary: Increase Subscription Renewal Rate by 15%. Secondary: Improve Lapsed User Re-engagement."></textarea>
+            </div>
+            <div class="input-group">
+                <label for="campaignIdea">3. Campaign Idea (Optional)</label>
+                <textarea id="campaignIdea" rows="6" placeholder="e.g., Gamified 'Renewal Challenge' targeting users 30 days pre-renewal. (If blank, AI will generate one)."></textarea>
+            </div>
+        </div>
+        
+        <!-- PLATFORM SELECTION -->
+        <div class="mt-8 p-4 bg-gray-100 rounded-lg border">
+            <h3 class="text-xl font-bold text-gray-700 mb-3"><i class="fas fa-tools text-indigo-500"></i> Platforms in Tech Stack (Select All That Apply)</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <!-- Data Warehouse -->
+                <div>
+                    <p class="font-semibold text-sm mb-2 text-indigo-600">Data Warehouse</p>
+                    <label class="block"><input type="checkbox" name="platform" value="Snowflake" class="mr-2">Snowflake</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Databricks" class="mr-2">Databricks</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Google BigQuery" class="mr-2">Google BigQuery</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Amazon Redshift" class="mr-2">Amazon Redshift</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Azure Synapse Analytics" class="mr-2">Azure Synapse Analytics</label>
+                </div>
+                <!-- CDP -->
+                <div>
+                    <p class="font-semibold text-sm mb-2 text-red-600">CDP (Reverse ETL)</p>
+                    <label class="block"><input type="checkbox" name="platform" value="Hightouch" class="mr-2">Hightouch</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Rudderstack" class="mr-2">Rudderstack</label>
+                    <label class="block"><input type="checkbox" name="platform" value="mParticle" class="mr-2">mParticle</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Tealium" class="mr-2">Tealium</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Segment" class="mr-2">Segment</label>
+                </div>
+                <!-- Customer Engagement -->
+                <div>
+                    <p class="font-semibold text-sm mb-2 text-green-600">Customer Engagement</p>
+                    <label class="block"><input type="checkbox" name="platform" value="Braze" class="mr-2">Braze</label>
+                </div>
+                <!-- Ad Platform -->
+                <div>
+                    <p class="font-semibold text-sm mb-2 text-yellow-600">Ad Platform (MMP)</p>
+                    <label class="block"><input type="checkbox" name="platform" value="Kochava" class="mr-2">Kochava</label>
+                    <label class="block"><input type="checkbox" name="platform" value="Adjust" class="mr-2">Adjust</label>
+                </div>
+            </div>
+        </div>
+        
+        <button id="orchestrateBtn" onclick="window.processOrchestration()" class="mt-6 w-full bg-indigo-600 text-white px-6 py-3 rounded-xl text-lg font-bold hover:bg-indigo-700 transition">
+            GENERATE DYNAMIC EXECUTION STRATEGY
+        </button>
+    </section>
+
+    <!-- OUTPUT CONTAINER -->
+    <section id="outputSection" class="mt-10">
+        <h2 class="text-3xl font-bold text-gray-700 mb-6 border-b pb-2">Execution Strategy Blueprint</h2>
+        <div id="outputContainer" class="space-y-6">
+            <p class="text-gray-500 text-center p-8 border-2 border-dashed rounded-xl">Input your discovery notes and select platforms to begin.</p>
+        </div>
+    </section>
+
+</main>
+
+
+<!-- Load Campaign Modal -->
+<div id="loadModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center z-50">
+    <div class="card w-full max-w-lg p-6">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 class="text-2xl font-bold text-indigo-700">Load Saved Blueprints</h3>
+            <button onclick="window.closeLoadModal()" class="text-gray-500 hover:text-gray-700 text-xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="campaignsList" class="max-h-96 overflow-y-auto space-y-3">
+            <!-- Campaign list will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    
+    // Set Firestore log level for debugging
+    setLogLevel('error');
+
+    // --- GLOBAL VARIABLES ---
+    window.appId = typeof __app_id !== 'undefined' ? __app_id : 'default-icop-planner';
+    window.initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    window.apiKey = ""; // API Key for Gemini is provided at runtime if this is empty
+
+    window.db = null;
+    window.auth = null;
+    window.userId = 'loading';
+    window.isAuthReady = false;
+    window.campaigns = [];
+    window.unsubscribeCampaigns = null;
+    
+    // --- UTILITY: MODAL CONTROLS (MUST BE GLOBAL) ---
+    window.openLoadModal = function() {
+        document.getElementById('loadModal').classList.remove('hidden');
+    }
+    window.closeLoadModal = function() {
+        document.getElementById('loadModal').classList.add('hidden');
+    }
+
+    // --- FIREBASE INITIALIZATION AND AUTHENTICATION ---
+    async function initFirebase() {
+        try {
+            const configString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+            const firebaseConfig = JSON.parse(configString);
+
+            if (!firebaseConfig || !firebaseConfig.projectId) {
+                console.error("Firebase config is missing or invalid. Persistence features will be disabled.");
+                window.isAuthReady = true;
+                window.updateUI();
+                return;
+            }
+
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            window.auth = getAuth(app);
+            
+            if (window.initialAuthToken) {
+                await signInWithCustomToken(window.auth, window.initialAuthToken);
+            } else {
+                await signInAnonymously(window.auth);
+            }
+
+            window.userId = window.auth.currentUser.uid;
+            window.isAuthReady = true;
+            console.log(`Firebase initialized. User ID: ${window.userId}.`);
+
+            window.subscribeToCampaigns();
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            window.isAuthReady = true;
+            window.updateUI();
+        }
+    }
+
+    // --- FIRESTORE LISTENERS ---
+    window.getCampaignsCollectionRef = function() {
+        if (!window.db) throw new Error("Firestore not initialized.");
+        return collection(window.db, 'artifacts', window.appId, 'users', window.userId, 'blueprints');
+    }
+
+    window.subscribeToCampaigns = function() {
+        if (window.unsubscribeCampaigns) window.unsubscribeCampaigns();
+        if (!window.db || window.userId === 'loading') return;
+
+        const campaignsQuery = query(window.getCampaignsCollectionRef());
+
+        window.unsubscribeCampaigns = onSnapshot(campaignsQuery, (snapshot) => {
+            window.campaigns = [];
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                window.campaigns.push({
+                    id: doc.id,
+                    name: data.inputs['Campaign Idea'] || 'Untitled Blueprint',
+                    timestamp: data.timestamp || Date.now(),
+                    ...data
+                });
+            });
+            window.campaigns.sort((a, b) => b.timestamp - a.timestamp);
+            window.updateCampaignsList();
+        }, (error) => {
+            console.error("Error subscribing to campaigns:", error);
+        });
+    }
+
+    // --- FILE 1 CONTINUES IN PART B ---
+</script>
+
+
+
+### 💾 ICOP Dynamic Platform Planner (V12) - PART B of 3 (Persistence and Orchestration Core)
+
+```javascript
+<script type="module">
+    // Continuation of the <script type="module"> block... 
+    
+    // --- FIREBASE ACTIONS & UI ---
+    window.updateUI = function() {
+        const saveButton = document.getElementById('saveCampaignBtn');
+        const loadButton = document.getElementById('loadCampaignBtn');
+        const persistenceStatus = document.getElementById('persistenceStatus');
+
+        if (window.isAuthReady && window.db) {
+            saveButton.disabled = false;
+            loadButton.disabled = false;
+            persistenceStatus.textContent = `Ready (User: ${window.userId.substring(0, 8)}...)`;
+            persistenceStatus.classList.replace('text-yellow-500', 'text-green-500');
+        } else if (window.isAuthReady) {
+            saveButton.disabled = true;
+            loadButton.disabled = true;
+            persistenceStatus.textContent = 'Persistence Disabled (Invalid Config)';
+            persistenceStatus.classList.replace('text-yellow-500', 'text-red-500');
+        } else {
+            persistenceStatus.textContent = 'Initializing...';
+        }
+    }
+
+    window.updateCampaignsList = function() {
+        const listContainer = document.getElementById('campaignsList');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        if (window.campaigns.length === 0) {
+            listContainer.innerHTML = '<p class="text-gray-500 p-4 text-sm">No saved blueprints found.</p>';
+            return;
+        }
+
+        window.campaigns.forEach(campaign => {
+            const date = new Date(campaign.timestamp).toLocaleDateString();
+            const time = new Date(campaign.timestamp).toLocaleTimeString();
+            
+            const item = document.createElement('div');
+            item.className = 'flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-md cursor-pointer transition duration-150 ease-in-out';
+            item.innerHTML = `
+                <div>
+                    <p class="font-semibold text-gray-800">${campaign.name}</p>
+                    <p class="text-xs text-gray-500">Saved: ${date} at ${time}</p>
+                </div>
+                <button data-id="${campaign.id}" class="load-campaign-item bg-indigo-500 text-white text-xs px-3 py-1 rounded-full hover:bg-indigo-600 transition">Load</button>
+            `;
+            listContainer.appendChild(item);
+        });
+
+        listContainer.querySelectorAll('.load-campaign-item').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const campaignId = e.target.getAttribute('data-id');
+                window.loadCampaign(campaignId);
+            });
+        });
+    }
+
+    window.saveCampaign = async function() {
+        if (!window.db || !window.userId) {
+            console.error("Database not ready for saving.");
+            return;
+        }
+
+        const saveButton = document.getElementById('saveCampaignBtn');
+        saveButton.disabled = true;
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        try {
+            const inputs = getInputs();
+            const outputsHTML = document.getElementById('outputContainer').innerHTML;
+
+            if (!inputs['Business Objectives'] || !inputs['Platforms'].length) {
+                alert('Please run the orchestration successfully before saving.');
+                saveButton.disabled = false;
+                saveButton.innerHTML = '<i class="fas fa-save"></i> Save Blueprint';
+                return;
+            }
+
+            const payload = {
+                inputs: inputs,
+                outputsHTML: outputsHTML,
+                timestamp: Date.now()
+            };
+            
+            const campaignRef = doc(window.getCampaignsCollectionRef());
+            await setDoc(campaignRef, payload);
+
+            alert('Blueprint saved successfully!');
+        } catch (error) {
+            console.error("Error saving campaign:", error);
+            alert('Failed to save blueprint. Check console for details.');
+        } finally {
+            saveButton.disabled = false;
+            saveButton.innerHTML = '<i class="fas fa-save"></i> Save Blueprint';
+        }
+    }
+
+    window.loadCampaign = async function(campaignId) {
+        const campaign = window.campaigns.find(c => c.id === campaignId);
+        if (!campaign) {
+            alert('Blueprint data not found.');
+            return;
+        }
+
+        // Populate Inputs
+        const inputs = campaign.inputs;
+        document.getElementById('meddicNotes').value = inputs['Discovery Notes'] || '';
+        document.getElementById('businessObjectives').value = inputs['Business Objectives'] || '';
+        document.getElementById('campaignIdea').value = inputs['Campaign Idea'] || '';
+        
+        // Reset and populate checkboxes
+        document.querySelectorAll('input[name="platform"]').forEach(checkbox => checkbox.checked = false);
+        (inputs['Platforms'] || []).forEach(platform => {
+            const checkbox = document.querySelector(`input[value="${platform}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+
+        // Populate Outputs
+        document.getElementById('outputContainer').innerHTML = campaign.outputsHTML;
+        document.getElementById('orchestrateBtn').textContent = 'Blueprint Loaded';
+        
+        window.closeLoadModal();
+        alert(`Blueprint "${campaign.name}" loaded successfully.`);
+    }
+
+    // --- INPUT GATHERING ---
+    function getInputs() {
+        const selectedPlatforms = Array.from(document.querySelectorAll('input[name="platform"]:checked')).map(cb => cb.value);
+
+        return {
+            'Discovery Notes': document.getElementById('meddicNotes').value.trim(),
+            'Business Objectives': document.getElementById('businessObjectives').value.trim(),
+            'Campaign Idea': document.getElementById('campaignIdea').value.trim(),
+            'Platforms': selectedPlatforms,
+        };
+    }
+
+    function validateInputs(inputs) {
+        if (!inputs['Business Objectives']) return "Business Objectives are mandatory.";
+        if (inputs['Platforms'].length === 0) return "Please select at least one platform in the tech stack.";
+        return null;
+    }
+
+    // --- API CORE ---
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${window.apiKey}`;
+
+    async function callGemini(userQuery, systemPrompt) {
+        // ... (API call logic - simplified for brevity)
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            tools: [{ "google_search": {} }],
+        };
+
+        for (let i = 0; i < 3; i++) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.status === 429) {
+                    if (i < 2) {
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    } else {
+                        throw new Error("Rate limit exceeded after multiple retries.");
+                    }
+                }
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.[0]?.text || result.candidates?.[0]?.content?.parts?.[0]?.text || "Error: No response text received.";
+                return text;
+
+            } catch (error) {
+                console.error("Gemini API call error:", error);
+                if (i === 2) throw new Error(`Failed to call Gemini API after retries: ${error.message}`);
+            }
+        }
+    }
+
+    // --- ORCHESTRATION CORE ---
+    window.processOrchestration = async function() {
+        // ... (Orchestration logic - simplified for brevity)
+        const inputs = getInputs();
+        const validationError = validateInputs(inputs);
+        const orchestrateBtn = document.getElementById('orchestrateBtn');
+        const outputContainer = document.getElementById('outputContainer');
+        
+        if (validationError) {
+            alert(validationError);
+            return;
+        }
+
+        orchestrateBtn.disabled = true;
+        orchestrateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing & Generating Strategy...';
+        outputContainer.innerHTML = generateLoadingMessage("Analyzing Discovery, Objectives, and Platform Capabilities...");
+        window.scrollTo(0, document.body.scrollHeight);
+
+        const { 'Discovery Notes': meddic, 'Business Objectives': objectives, 'Campaign Idea': idea, 'Platforms': platforms } = inputs;
+        const platformsList = platforms.join(', ');
+
+        const strategyPrompt = `
+            Analyze the following:
+            1. Business Objectives: ${objectives}
+            2. Discovery/MEDDIC Notes: ${meddic}
+            3. Tech Stack: ${platformsList}
+            4. Campaign Idea (Use this or generate one): ${idea || 'GENERATE NEW IDEA BASED ON OBJECTIVES'}
+
+            You must generate a comprehensive, single output containing the following three sections:
+            A) Final Campaign Idea (Refined or Generated) and Core Goal (1 paragraph).
+            B) Suggested Audiences and Segmentation Strategy (Detailed markdown list).
+            C) Platform Execution Plan (A detailed markdown list for each platform in the Tech Stack).
+
+            The Platform Execution Plan (C) must detail how each SELECTED platform contributes to the campaign.
+        `;
+
+        try {
+            const rawOutput = await callGemini(strategyPrompt, "You are a senior MarTech strategist. Provide the output in three clearly labeled sections (A, B, C) using bold headings and markdown lists/tables. Do NOT include any filler text outside the three sections.");
+
+            const diagram = generateDiagram(platforms);
+            renderFinalBlueprint(rawOutput, diagram);
+        } catch (error) {
+            outputContainer.innerHTML = generateErrorMessage(`Orchestration Failed: ${error.message}`);
+        } finally {
+            orchestrateBtn.disabled = false;
+            orchestrateBtn.innerHTML = 'GENERATE DYNAMIC EXECUTION STRATEGY';
+        }
+    }
+
+    // --- FILE 2 CONTINUES IN PART C ---
+</script>
+
+
+### 💾 ICOP Dynamic Platform Planner (V12) - PART C of 3 (Rendering and Helper Functions)
+
+```javascript
+<script type="module">
+    // Continuation of the <script type="module"> block...
+
+    function generateLoadingMessage(message) {
+        return `
+            <div class="card p-8 text-center bg-white border-2 border-indigo-400 border-dashed">
+                <i class="fas fa-infinity fa-spin text-indigo-500 text-6xl mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-700">Orchestrating Blueprint...</h3>
+                <p class="text-gray-500 mt-2">${message}</p>
+            </div>
+        `;
+    }
+
+    function generateErrorMessage(message) {
+        return `
+            <div class="card p-8 text-center bg-red-50 border-2 border-red-500 border-dashed">
+                <i class="fas fa-exclamation-triangle text-red-500 text-6xl mb-4"></i>
+                <h3 class="text-2xl font-bold text-red-700">Execution Error</h3>
+                <p class="text-red-600 mt-2">Error: ${message}</p>
+            </div>
+        `;
+    }
+
+    function formatOutputText(text) {
+        if (!text) return '— Content Not Generated —';
+        
+        let html = text.split('\n').map(line => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+                // Convert list items to <li> wrapped in <ul> later
+                return `<li class="ml-4 list-disc">${trimmed.substring(2).trim()}</li>`;
+            }
+            if (trimmed.startsWith('####')) {
+                 return `<h4 class="font-bold text-lg mt-4 mb-1">${trimmed.substring(4).trim()}</h4>`;
+            }
+            if (trimmed.startsWith('###')) {
+                 return `<h3 class="font-bold text-xl mt-6 mb-2">${trimmed.substring(3).trim()}</h3>`;
+            }
+            if (trimmed.startsWith('##')) {
+                 return `<h2 class="font-bold text-2xl mt-8 mb-3">${trimmed.substring(2).trim()}</h2>`;
+            }
+            if (trimmed === '') return '';
+            return `<p>${trimmed}</p>`;
+        }).join('');
+
+        // Wrap consecutive <li> items in a <ul>
+        html = html.replace(/<\/p>\s*<li/g, '</li></ul><ul class="list-disc ml-4 space-y-1"><li')
+                   .replace(/<\/li>\s*<p/g, '</li></ul><p')
+                   .replace(/<\/li>\s*<h/g, '</li></ul><h')
+                   .replace(/<p>\s*<li/g, '<p></p><ul class="list-disc ml-4 space-y-1"><li');
+
+        // Cleanup initial/final <ul> tags if necessary
+        return html;
+    }
+
+    function generateDiagram(platforms) {
+        const platformMap = {
+            'Data Warehouse': platforms.filter(p => ['Snowflake', 'Databricks', 'Google BigQuery', 'Amazon Redshift', 'Azure Synapse Analytics'].includes(p)),
+            'CDP': platforms.filter(p => ['Hightouch', 'Rudderstack', 'mParticle', 'Tealium', 'Segment'].includes(p)),
+            'Engagement': platforms.filter(p => ['Braze'].includes(p)),
+            'Ad': platforms.filter(p => ['Kochava', 'Adjust'].includes(p)),
+        };
+
+        const flow = [];
+        if (platformMap['Data Warehouse'].length) flow.push(platformMap['Data Warehouse'][0] + ' (DWH)');
+        if (platformMap['CDP'].length) flow.push(platformMap['CDP'][0] + ' (CDP)');
+        if (platformMap['Engagement'].length) flow.push(platformMap['Engagement'][0] + ' (CRM)');
+        if (platformMap['Ad'].length) flow.push(platformMap['Ad'][0] + ' (MMP)');
+
+        const flowString = flow.join(' → ');
+        
+        return `
+            <pre class="font-mono text-xs md:text-sm p-4 bg-gray-700 text-white rounded-md mt-2">
+EXECUTION FLOW:
+Discovery & Objectives → Data Modeling → Activation → Execution → Feedback
+-------------------------------------------------------------------------
+${flowString}
+            </pre>
+        `;
+    }
+
+    function renderFinalBlueprint(rawOutput, diagram) {
+        const outputContainer = document.getElementById('outputContainer');
+        const sections = {
+            'A) Final Campaign Idea and Core Goal': '',
+            'B) Suggested Audiences and Segmentation Strategy': '',
+            'C) Platform Execution Plan': '',
+        };
+        
+        let currentSection = null;
+        rawOutput.split('\n').forEach(line => {
+            const trimmedLine = line.trim();
+            if (trimmedLine.startsWith('A)')) currentSection = 'A) Final Campaign Idea and Core Goal';
+            else if (trimmedLine.startsWith('B)')) currentSection = 'B) Suggested Audiences and Segmentation Strategy';
+            else if (trimmedLine.startsWith('C)')) currentSection = 'C) Platform Execution Plan';
+            
+            if (currentSection) {
+                sections[currentSection] += line + '\n';
+            }
+        });
+
+        const ideaSection = sections['A) Final Campaign Idea and Core Goal'].replace(/A\) .*?:?/i, '').trim();
+        const audienceSection = formatOutputText(sections['B) Suggested Audiences and Segmentation Strategy'].replace(/B\) .*?:?/i, '').trim());
+        const executionPlan = formatOutputText(sections['C) Platform Execution Plan'].replace(/C\) .*?:?/i, '').trim());
+
+        const outputHTML = `
+            <div class="card p-6 bg-indigo-100 border-2 border-indigo-500">
+                <h3 class="text-2xl font-bold text-indigo-700 mb-4">Strategic Synthesis Complete</h3>
+
+                <div class="mb-6 p-4 bg-white rounded-lg">
+                    <div class="output-title text-indigo-700"><i class="fas fa-lightbulb"></i> Final Campaign Idea</div>
+                    <p class="text-lg font-semibold">${ideaSection}</p>
+                </div>
+
+                <div class="mb-6 p-4 bg-white rounded-lg">
+                    <div class="output-title text-indigo-700"><i class="fas fa-sitemap"></i> Execution Flow Diagram</div>
+                    ${diagram}
+                </div>
+
+                <div class="mb-6 p-4 bg-white rounded-lg">
+                    <div class="output-title text-indigo-700"><i class="fas fa-users"></i> Suggested Audiences & Segmentation</div>
+                    <div class="space-y-3">${audienceSection}</div>
+                </div>
+
+                <div class="p-4 bg-white rounded-lg">
+                    <div class="output-title text-indigo-700"><i class="fas fa-tasks"></i> Platform Execution Plan</div>
+                    <div class="space-y-3">${executionPlan}</div>
+                </div>
+            </div>
+        `;
+        outputContainer.innerHTML = outputHTML;
+    }
+    
+    // --- GLOBAL COPY FUNCTION (Needed for Copy Buttons in the HTML) ---
+    window.copyContent = function(id) {
+        const element = document.getElementById(id);
+        if (!element) return;
+
+        let textToCopy = element.querySelector('.code-block, pre') ? element.querySelector('.code-block, pre').textContent : element.textContent;
+
+        const button = element.querySelector('button');
+        if (button) {
+            const buttonText = button.textContent;
+            textToCopy = textToCopy.replace(buttonText, '').trim();
+        }
+
+        const tempInput = document.createElement('textarea');
+        tempInput.value = textToCopy;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        const outputTitleElement = element.querySelector('.output-title');
+        if (outputTitleElement) {
+            const originalHTML = outputTitleElement.innerHTML;
+            outputTitleElement.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> Copied!`;
+            setTimeout(() => {
+                outputTitleElement.innerHTML = originalHTML;
+            }, 1500);
+        }
+    }
+
+
+    // --- FINAL INITIALIZATION CALL ---
+    initFirebase();
+</script>
